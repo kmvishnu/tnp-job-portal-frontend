@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { createJob, updateJob, clearJobError } from '../store/jobSlice';
-import { Briefcase, ArrowLeft, Loader2, AlertCircle, Save, CheckCircle2 } from 'lucide-react';
+import { Briefcase, ArrowLeft, Loader2, AlertCircle, Save, CheckCircle } from 'lucide-react';
 
 interface JobActionProps {
   jobToEdit?: any;
@@ -28,14 +28,13 @@ export const JobAction: React.FC<JobActionProps> = ({ jobToEdit, onBack }) => {
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Load editing details if in edit mode
   useEffect(() => {
     dispatch(clearJobError());
     if (jobToEdit) {
       setFormData({
         title: jobToEdit.title || '',
         description: jobToEdit.description || '',
-        category: jobToEdit.category || 'Engineering',
+        category: jobToEdit.category || 'Frontend',
         experienceLevel: jobToEdit.experienceLevel || 'Entry Level',
         salary: jobToEdit.salary ? String(jobToEdit.salary) : '',
       });
@@ -97,17 +96,8 @@ export const JobAction: React.FC<JobActionProps> = ({ jobToEdit, onBack }) => {
       } else {
         await dispatch(createJob(formattedData)).unwrap();
         setSuccessMessage('Job opportunity posted successfully!');
-        // Reset form for next post
-        setFormData({
-          title: '',
-          description: '',
-          category: 'Engineering',
-          experienceLevel: 'Entry Level',
-          salary: '',
-        });
       }
 
-      // Automatically head back to dashboard after a short delay
       setTimeout(() => {
         onBack();
       }, 1500);
@@ -117,48 +107,47 @@ export const JobAction: React.FC<JobActionProps> = ({ jobToEdit, onBack }) => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 select-none animate-fadeIn">
+    <div className="max-w-3xl mx-auto space-y-6 text-slate-800 animate-fadeIn select-none">
       {/* Return link */}
       <button
         onClick={onBack}
-        className="inline-flex items-center space-x-2 text-slate-400 hover:text-slate-200 text-sm font-medium transition-colors duration-150"
+        className="inline-flex items-center space-x-2 text-slate-500 hover:text-slate-900 text-sm font-semibold transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
         <span>Back to Admin Dashboard</span>
       </button>
 
-      {/* Header and Details */}
-      <div className="bg-gradient-to-br from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800/80 shadow-md">
-        <div className="flex items-center space-x-3.5">
-          <div className="bg-indigo-600/10 border border-indigo-500/20 p-2.5 rounded-xl text-indigo-400">
-            <Briefcase className="h-5 w-5" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-white">
-              {isEditMode ? 'Modify Job Posting' : 'Post a New Job'}
-            </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              {isEditMode 
-                ? 'Update descriptions, salaries, or level details for this job posting.' 
-                : 'Publish custom job requirements and salary structures for incoming applications.'}
-            </p>
-          </div>
+      {/* Header Panel */}
+      <div className="bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm flex items-center space-x-3.5">
+        <div className="bg-indigo-50 border border-indigo-150/40 p-2.5 rounded-xl text-indigo-600">
+          <Briefcase className="h-5 w-5" />
+        </div>
+        <div>
+          <h2 className="text-xl font-extrabold text-slate-900">
+            {isEditMode ? 'Modify Job Posting' : 'Post a New Job'}
+          </h2>
+          <p className="text-xs text-slate-400 font-semibold tracking-wide uppercase mt-0.5">
+            {isEditMode 
+              ? 'Update vacancy parameters or descriptions' 
+              : 'Add new technical roles to placement catalog'}
+          </p>
         </div>
       </div>
 
-      {/* Form Container */}
-      <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-8 shadow-xl">
-        {/* Status Alerts */}
+      {/* Form Card */}
+      <div className="bg-white border border-slate-200/60 rounded-3xl p-8 shadow-sm">
+        {/* Error Notification */}
         {error && (
-          <div className="mb-6 flex items-start space-x-3 bg-red-950/20 border border-red-900/30 p-4 rounded-xl text-red-400 text-sm">
-            <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+          <div className="mb-6 flex items-start space-x-3 bg-red-50 border border-red-200/50 p-4 rounded-xl text-red-655 text-xs font-semibold">
+            <AlertCircle className="h-4.5 w-4.5 shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
 
+        {/* Success Notification */}
         {successMessage && (
-          <div className="mb-6 flex items-start space-x-3 bg-emerald-950/20 border border-emerald-900/30 p-4 rounded-xl text-emerald-400 text-sm">
-            <CheckCircle2 className="h-5 w-5 shrink-0 mt-0.5" />
+          <div className="mb-6 flex items-start space-x-3 bg-emerald-50 border border-emerald-200/50 p-4 rounded-xl text-emerald-600 text-xs font-semibold animate-fadeIn">
+            <CheckCircle className="h-4.5 w-4.5 shrink-0 mt-0.5" />
             <span>{successMessage}</span>
           </div>
         )}
@@ -167,7 +156,7 @@ export const JobAction: React.FC<JobActionProps> = ({ jobToEdit, onBack }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Title */}
             <div className="space-y-1.5 md:col-span-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400" htmlFor="title">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400" htmlFor="title">
                 Job Title
               </label>
               <input
@@ -176,19 +165,19 @@ export const JobAction: React.FC<JobActionProps> = ({ jobToEdit, onBack }) => {
                 type="text"
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="Senior Full Stack Software Engineer"
-                className={`block w-full px-4 py-3 bg-slate-950/50 border rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-200 placeholder-slate-600 text-sm transition-all duration-200 ${
-                  validationErrors.title ? 'border-red-900/60' : 'border-slate-800'
+                placeholder="Senior Full Stack Software Architect"
+                className={`block w-full px-4 py-2.5 bg-slate-50 border rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-800 placeholder-slate-400 text-xs transition-all duration-200 ${
+                  validationErrors.title ? 'border-red-400' : 'border-slate-200'
                 }`}
               />
               {validationErrors.title && (
-                <p className="text-xs text-red-500 font-medium pl-1">{validationErrors.title}</p>
+                <p className="text-[10px] text-red-500 font-semibold pl-1">{validationErrors.title}</p>
               )}
             </div>
 
             {/* Category selection */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400" htmlFor="category">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400" htmlFor="category">
                 Category Group
               </label>
               <select
@@ -196,7 +185,7 @@ export const JobAction: React.FC<JobActionProps> = ({ jobToEdit, onBack }) => {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="block w-full px-4 py-3 bg-slate-950/50 border border-slate-800 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-200 text-sm transition-all duration-200 appearance-none"
+                className="block w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-700 text-xs transition-all duration-200 cursor-pointer"
               >
                 {CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>
@@ -208,7 +197,7 @@ export const JobAction: React.FC<JobActionProps> = ({ jobToEdit, onBack }) => {
 
             {/* Experience Selection */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400" htmlFor="experienceLevel">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400" htmlFor="experienceLevel">
                 Required Experience
               </label>
               <select
@@ -216,7 +205,7 @@ export const JobAction: React.FC<JobActionProps> = ({ jobToEdit, onBack }) => {
                 name="experienceLevel"
                 value={formData.experienceLevel}
                 onChange={handleChange}
-                className="block w-full px-4 py-3 bg-slate-950/50 border border-slate-800 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-200 text-sm transition-all duration-200 appearance-none"
+                className="block w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-700 text-xs transition-all duration-200 cursor-pointer"
               >
                 {EXPERIENCE_LEVELS.map((exp) => (
                   <option key={exp} value={exp}>
@@ -228,11 +217,11 @@ export const JobAction: React.FC<JobActionProps> = ({ jobToEdit, onBack }) => {
 
             {/* Salary */}
             <div className="space-y-1.5 md:col-span-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400" htmlFor="salary">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400" htmlFor="salary">
                 Annual Salary (USD)
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 text-sm font-semibold">
+                <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 text-xs font-bold">
                   $
                 </span>
                 <input
@@ -242,21 +231,21 @@ export const JobAction: React.FC<JobActionProps> = ({ jobToEdit, onBack }) => {
                   min="0"
                   value={formData.salary}
                   onChange={handleChange}
-                  placeholder="120000"
-                  className={`block w-full pl-9 pr-4 py-3 bg-slate-950/50 border rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-200 placeholder-slate-600 text-sm transition-all duration-200 ${
-                    validationErrors.salary ? 'border-red-900/60' : 'border-slate-800'
+                  placeholder="145000"
+                  className={`block w-full pl-9 pr-4 py-2.5 bg-slate-50 border rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-800 placeholder-slate-400 text-xs transition-all duration-200 ${
+                    validationErrors.salary ? 'border-red-400' : 'border-slate-200'
                   }`}
                 />
               </div>
               {validationErrors.salary && (
-                <p className="text-xs text-red-500 font-medium pl-1">{validationErrors.salary}</p>
+                <p className="text-[10px] text-red-500 font-semibold pl-1">{validationErrors.salary}</p>
               )}
             </div>
 
             {/* Description */}
             <div className="space-y-1.5 md:col-span-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400" htmlFor="description">
-                Job Description & Details
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400" htmlFor="description">
+                Job Description & Requirements
               </label>
               <textarea
                 id="description"
@@ -264,41 +253,41 @@ export const JobAction: React.FC<JobActionProps> = ({ jobToEdit, onBack }) => {
                 rows={6}
                 value={formData.description}
                 onChange={handleChange}
-                placeholder="Detail the technical responsibilities, tools, and prerequisites needed for candidates to succeed..."
-                className={`block w-full px-4 py-3 bg-slate-950/50 border rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-200 placeholder-slate-600 text-sm transition-all duration-200 resize-none ${
-                  validationErrors.description ? 'border-red-900/60' : 'border-slate-800'
+                placeholder="Detail technical requirements, infrastructure dependencies, and prerequisites..."
+                className={`block w-full px-4 py-2.5 bg-slate-50 border rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-800 placeholder-slate-400 text-xs transition-all duration-200 resize-none ${
+                  validationErrors.description ? 'border-red-400' : 'border-slate-200'
                 }`}
               />
               {validationErrors.description && (
-                <p className="text-xs text-red-500 font-medium pl-1">{validationErrors.description}</p>
+                <p className="text-[10px] text-red-500 font-semibold pl-1">{validationErrors.description}</p>
               )}
             </div>
           </div>
 
-          {/* Form Actions */}
-          <div className="flex items-center justify-end space-x-3.5 border-t border-slate-800/60 pt-6 mt-6">
+          {/* Actions */}
+          <div className="flex items-center justify-end space-x-3.5 border-t border-slate-100 pt-6 mt-6">
             <button
               type="button"
               onClick={onBack}
               disabled={actionLoading}
-              className="px-5 py-2.5 bg-slate-850 hover:bg-slate-800 text-slate-350 hover:text-white border border-slate-800 font-semibold text-sm rounded-xl transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-5 py-2.5 bg-white hover:bg-slate-50 text-slate-650 hover:text-slate-900 border border-slate-200 rounded-xl font-bold text-xs transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={actionLoading}
-              className="inline-flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-all duration-200 border border-indigo-500/20 hover:shadow-lg hover:shadow-indigo-500/20 disabled:bg-indigo-850 disabled:border-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed"
+              className="inline-flex items-center space-x-2 bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition-all duration-200 shadow-md hover:scale-[1.005] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {actionLoading ? (
                 <>
-                  <Loader2 className="h-4.5 w-4.5 animate-spin text-slate-400" />
+                  <Loader2 className="h-4 w-4 animate-spin text-white" />
                   <span>Submitting...</span>
                 </>
               ) : (
                 <>
-                  <Save className="h-4.5 w-4.5" />
-                  <span>{isEditMode ? 'Update Posting' : 'Post Job'}</span>
+                  <Save className="h-4 w-4" />
+                  <span>{isEditMode ? 'Update Vacancy' : 'Publish Posting'}</span>
                 </>
               )}
             </button>

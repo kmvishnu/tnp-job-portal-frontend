@@ -29,7 +29,8 @@ interface JobState {
   jobs: Job[];
   metadata: PaginationMetadata | null;
   loading: boolean;
-  actionLoading: boolean; // specifically for create/update/delete operations
+  actionLoading: boolean; // specifically for create/update/delete/apply operations
+  appliedJobIds: string[];
   error: string | null;
 }
 
@@ -38,6 +39,13 @@ const initialState: JobState = {
   metadata: null,
   loading: false,
   actionLoading: false,
+  appliedJobIds: (() => {
+    try {
+      return JSON.parse(localStorage.getItem('applied_job_ids') || '[]');
+    } catch {
+      return [];
+    }
+  })(),
   error: null,
 };
 
@@ -96,6 +104,19 @@ export const deleteJob = createAsyncThunk(
       return id;
     } catch (error: any) {
       const message = error.response?.data?.message || 'Failed to delete job';
+      return rejectWithValue(message);
+    }
+  }
+);
+
+export const applyForJob = createAsyncThunk(
+  'jobs/apply',
+  async (jobId: string, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.post('/applications', { jobId });
+      return { jobId, application: response.data.data.application };
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Failed to submit application';
       return rejectWithValue(message);
     }
   }
@@ -169,6 +190,24 @@ const jobSlice = createSlice({
         state.jobs = state.jobs.filter((job) => job.id !== action.payload);
       })
       .addCase(deleteJob.rejected, (state, action) => {
+        state.actionLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Apply For Job
+    builder
+      .addCase(applyForJob.pending, (state) => {
+        state.actionLoading = true;
+        state.error = null;
+      })
+      .addCase(applyForJob.fulfilled, (state, action: PayloadAction<{ jobId: string; application: any }>) => {
+        state.actionLoading = false;
+        if (!state.appliedJobIds.includes(action.payload.jobId)) {
+          state.appliedJobIds.push(action.payload.jobId);
+          localStorage.setItem('applied_job_ids', JSON.stringify(state.appliedJobIds));
+        }
+      })
+      .addCase(applyForJob.rejected, (state, action) => {
         state.actionLoading = false;
         state.error = action.payload as string;
       });

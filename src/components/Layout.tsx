@@ -15,57 +15,67 @@ export const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentVie
 
   const handleLogout = () => {
     dispatch(logout());
+    onNavigate('landing');
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans selection:bg-indigo-500 selection:text-white transition-all duration-200">
       {/* Navigation Header */}
-      <header className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-50 glass-navbar border-b border-slate-200/60 px-6 py-4 flex items-center justify-between">
         <div 
           className="flex items-center space-x-3 cursor-pointer group"
-          onClick={() => onNavigate('dashboard')}
+          onClick={() => onNavigate('landing')}
         >
-          <div className="bg-indigo-600 p-2.5 rounded-xl shadow-lg shadow-indigo-600/20 group-hover:scale-105 transition-transform duration-200">
-            <Briefcase className="h-6 h-6 text-white" />
+          <div className="bg-gradient-to-r from-indigo-600 to-cyan-500 p-2.5 rounded-xl shadow-md group-hover:scale-105 transition-transform duration-200">
+            <Briefcase className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent">
+            <h1 className="text-lg font-bold tracking-tight text-slate-900 leading-tight">
               TNP Job Portal
             </h1>
-            <p className="text-xs text-indigo-400 font-semibold tracking-wider uppercase">Admin Control Room</p>
+            <p className="text-[10px] text-cyan-600 font-bold uppercase tracking-wider leading-none mt-0.5">
+              Admin Control Room
+            </p>
           </div>
         </div>
 
         {user && (
           <div className="flex items-center space-x-6">
             {/* User Session Info Card */}
-            <div className="hidden sm:flex items-center space-x-3 bg-slate-800/40 px-4 py-2 rounded-xl border border-slate-700/50">
-              <div className="bg-slate-700/60 p-1.5 rounded-lg">
-                <UserIcon className="h-4 w-4 text-slate-300" />
+            <div className="hidden sm:flex items-center space-x-3 bg-slate-100/80 px-4 py-2 rounded-xl border border-slate-200/40">
+              <div className="bg-slate-200 p-1.5 rounded-lg text-slate-600">
+                <UserIcon className="h-3.5 w-3.5" />
               </div>
-              <div className="text-left">
-                <p className="text-sm font-medium text-slate-200 leading-tight">{user.name}</p>
-                <p className="text-xs text-slate-400 leading-none">{user.email}</p>
+              <div className="text-left leading-none">
+                <p className="text-xs font-semibold text-slate-800">{user.name}</p>
+                <p className="text-[9px] text-slate-500 font-light mt-0.5">{user.email}</p>
               </div>
-              <span className="ml-2 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
+              <span className="ml-2 bg-indigo-50 text-indigo-600 border border-indigo-150/40 text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
                 {user.role}
               </span>
             </div>
 
             {/* Navigation Actions */}
             <div className="flex items-center space-x-3">
+              <button
+                onClick={() => onNavigate('landing')}
+                className="bg-white hover:bg-slate-50 text-slate-650 border border-slate-200 rounded-xl font-bold text-xs px-4 py-2.5 shadow-sm transition-all duration-200"
+              >
+                Go to Site
+              </button>
+
               {currentView === 'dashboard' && (
                 <button
                   onClick={() => onNavigate('create')}
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm px-4 py-2 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-indigo-500/20 flex items-center space-x-2 border border-indigo-500/30"
+                  className="bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition-all duration-200"
                 >
-                  <span>Post Job</span>
+                  Post Job
                 </button>
               )}
               {currentView !== 'dashboard' && (
                 <button
                   onClick={() => onNavigate('dashboard')}
-                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium text-sm px-4 py-2 rounded-xl transition-all duration-200"
+                  className="bg-white hover:bg-slate-50 text-slate-650 border border-slate-200 rounded-xl font-bold text-xs px-4 py-2.5 shadow-sm transition-all duration-200"
                 >
                   Dashboard
                 </button>
@@ -74,7 +84,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentVie
               {/* Logout Button */}
               <button
                 onClick={handleLogout}
-                className="bg-slate-800 hover:bg-red-950/30 border border-slate-700 hover:border-red-800/50 text-slate-300 hover:text-red-400 p-2.5 rounded-xl transition-all duration-200 hover:shadow-md hover:shadow-red-950/10 flex items-center justify-center"
+                className="bg-white hover:bg-red-50 hover:text-red-650 border border-slate-200 hover:border-red-200 text-slate-500 p-2.5 rounded-xl transition-all duration-200 shadow-sm"
                 title="Log Out"
               >
                 <LogOut className="h-4 w-4" />
@@ -90,7 +100,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentVie
       </main>
 
       {/* Footer */}
-      <footer className="bg-slate-950 border-t border-slate-900 py-6 text-center text-xs text-slate-500">
+      <footer className="bg-white border-t border-slate-200/60 py-6 text-center text-xs text-slate-400">
         <p>&copy; {new Date().getFullYear()} TNP India Job Portal. All Rights Reserved. Powered by Secure JWT Authentication.</p>
       </footer>
     </div>

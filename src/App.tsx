@@ -1,27 +1,68 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import { checkAuthStatus, logout } from './store/authSlice';
+import { Header } from './components/Header';
+import { Layout } from './components/Layout';
+import { Landing } from './pages/Landing';
+import { Discovery } from './pages/Discovery';
+import { JobDetails } from './pages/JobDetails';
 import { Login } from './pages/Login';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { JobAction } from './pages/JobAction';
-import { Layout } from './components/Layout';
 import { Loader2, ShieldAlert, LogOut } from 'lucide-react';
+
+interface RedirectState {
+  view: string;
+  jobId?: string;
+}
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const { isAuthenticated, user, loading } = useAppSelector((state) => state.auth);
 
-  const [currentView, setCurrentView] = useState('dashboard'); // dashboard | create | edit
+  const [currentView, setCurrentView] = useState('landing'); // landing | jobs | job-details | login | dashboard | create | edit
   const [editingJob, setEditingJob] = useState<any>(null);
+  const [editingJobId, setEditingJobId] = useState<string | null>(null);
+  const [redirectAfterLogin, setRedirectAfterLogin] = useState<RedirectState | null>(null);
 
-  // Check authentication status on startup
+  // 1. Initial Authentication Check on Mount
   useEffect(() => {
     dispatch(checkAuthStatus());
   }, [dispatch]);
 
+  // 2. Core Redirect Handler
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (redirectAfterLogin) {
+        const { view, jobId } = redirectAfterLogin;
+        setCurrentView(view);
+        if (jobId) {
+          setEditingJobId(jobId);
+        }
+        setRedirectAfterLogin(null); // Clear redirect
+      } else if (currentView === 'login') {
+        // Standard redirect if no saved redirect path is found
+        if (user.role === 'ADMIN') {
+          setCurrentView('dashboard');
+        } else {
+          setCurrentView('landing');
+        }
+      }
+    }
+  }, [isAuthenticated, user, redirectAfterLogin, currentView]);
+
   const handleNavigate = (view: string, data?: any) => {
+    if (view === 'login' && data?.redirect) {
+      setRedirectAfterLogin(data.redirect);
+    } else if (view !== 'login') {
+      setRedirectAfterLogin(null);
+    }
+
     setCurrentView(view);
-    if (view === 'edit' && data) {
+
+    if (view === 'job-details' && data) {
+      setEditingJobId(data);
+    } else if (view === 'edit' && data) {
       setEditingJob(data);
     } else {
       setEditingJob(null);
@@ -30,68 +71,103 @@ const App: React.FC = () => {
 
   const handleLogout = () => {
     dispatch(logout());
+    setCurrentView('landing');
   };
 
-  // 1. Initial Application Bootstrapping Loader
+  // Bootstrapping Loader
   if (loading && !isAuthenticated) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center space-y-4 select-none">
-        <Loader2 className="h-10 w-10 text-indigo-500 animate-spin" />
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center space-y-4 select-none">
+        <Loader2 className="h-7 w-7 text-indigo-650 animate-spin" />
         <div className="text-center">
-          <h3 className="text-lg font-bold text-white tracking-wide">Bootstrapping Console</h3>
-          <p className="text-xs text-slate-500 mt-1">Verifying encrypted administrator session tokens...</p>
+          <h3 className="text-sm font-bold text-slate-800 tracking-wide">Connecting Console</h3>
+          <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-1">Verifying encrypted credential matrices...</p>
         </div>
       </div>
     );
   }
 
-  // 2. Unauthenticated State: Render Login/Register
-  if (!isAuthenticated || !user) {
-    return <Login />;
-  }
+  // Admin Views Routing
+  const isAdminView = ['dashboard', 'create', 'edit'].includes(currentView);
 
-  // 3. Authenticated but Authorization Check (Only ADMINs can view Admin Portal)
-  if (user.role !== 'ADMIN') {
+  if (isAdminView) {
+    // If not logged in, force authentication
+    if (!isAuthenticated || !user) {
+      return <Login redirectInfo={{ view: currentView }} />;
+    }
+
+    // Role verification: Restrict to administrators
+    if (user.role !== 'ADMIN') {
+      return (
+        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-center select-none font-sans">
+          <div className="max-w-md bg-white border border-slate-200/60 rounded-3xl p-8 shadow-sm space-y-6">
+            <div className="inline-flex bg-red-50 border border-red-200/50 p-4 rounded-full text-red-655">
+              <ShieldAlert className="h-9 w-9 animate-bounce" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xl font-extrabold text-slate-900 leading-none">Access Forbidden</h3>
+              <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                Your account authority level is <span className="font-bold text-indigo-600">USER</span>. 
+                The requested panel requires elevated <span className="font-bold text-red-650">ADMIN</span> permissions.
+              </p>
+            </div>
+            <div className="flex flex-col space-y-3 pt-2">
+              <button
+                onClick={handleLogout}
+                className="w-full bg-white hover:bg-slate-50 text-slate-700 font-bold py-2.5 px-4 rounded-xl border border-slate-200 shadow-sm transition-all duration-200 flex items-center justify-center space-x-2"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Log In as Admin</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center select-none">
-        <div className="max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
-          <div className="inline-flex bg-red-950/30 border border-red-900/30 p-4 rounded-full text-red-500">
-            <ShieldAlert className="h-10 w-10 animate-bounce" />
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-2xl font-bold text-white">Access Forbidden</h3>
-            <p className="text-sm text-slate-400">
-              Your account has the <span className="font-semibold text-indigo-400">USER</span> role. 
-              The administration panel requires elevated <span className="font-semibold text-red-400">ADMIN</span> permissions.
-            </p>
-          </div>
-          <div className="flex flex-col space-y-3 pt-2">
-            <button
-              onClick={handleLogout}
-              className="w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 border border-slate-700 hover:shadow-md"
-            >
-              <LogOut className="h-4.5 w-4.5" />
-              <span>Log In with Admin Account</span>
-            </button>
-          </div>
-        </div>
-      </div>
+      <Layout onNavigate={handleNavigate} currentView={currentView}>
+        {currentView === 'dashboard' && (
+          <AdminDashboard onNavigate={handleNavigate} />
+        )}
+        {currentView === 'create' && (
+          <JobAction onBack={() => handleNavigate('dashboard')} />
+        )}
+        {currentView === 'edit' && (
+          <JobAction jobToEdit={editingJob} onBack={() => handleNavigate('dashboard')} />
+        )}
+      </Layout>
     );
   }
 
-  // 4. Authorized State: Render Admin Layout & Subviews
+  // Public Views Routing (Landing, Discovery, Details, Login)
   return (
-    <Layout onNavigate={handleNavigate} currentView={currentView}>
-      {currentView === 'dashboard' && (
-        <AdminDashboard onNavigate={handleNavigate} />
-      )}
-      {currentView === 'create' && (
-        <JobAction onBack={() => handleNavigate('dashboard')} />
-      )}
-      {currentView === 'edit' && (
-        <JobAction jobToEdit={editingJob} onBack={() => handleNavigate('dashboard')} />
-      )}
-    </Layout>
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans transition-all duration-200">
+      <Header currentView={currentView} onNavigate={handleNavigate} />
+      
+      <main className="flex-grow max-w-6xl w-full mx-auto p-6 md:p-8 animate-fadeIn">
+        {currentView === 'landing' && (
+          <Landing onNavigate={handleNavigate} />
+        )}
+        {currentView === 'jobs' && (
+          <Discovery onNavigate={handleNavigate} />
+        )}
+        {currentView === 'job-details' && editingJobId && (
+          <JobDetails 
+            jobId={editingJobId} 
+            onBack={() => handleNavigate('jobs')} 
+            onNavigate={handleNavigate} 
+          />
+        )}
+        {currentView === 'login' && (
+          <Login redirectInfo={redirectAfterLogin} />
+        )}
+      </main>
+
+      <footer className="bg-white border-t border-slate-200/60 py-6 text-center text-xs text-slate-400">
+        <p>&copy; {new Date().getFullYear()} TNP India Job Portal. All Rights Reserved. Powered by Icy Cyber Light Tech.</p>
+      </footer>
+    </div>
   );
 };
 
