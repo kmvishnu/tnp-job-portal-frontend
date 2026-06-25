@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { fetchJobs, deleteJob } from '../store/jobSlice';
+import { fetchJobs, deleteJob, type Job } from '../store/jobSlice';
 import { Plus, Edit, Trash2, Filter, ChevronLeft, ChevronRight, Briefcase, RefreshCw } from 'lucide-react';
+import { DeleteConfirmationModal } from '../components/DeleteConfirmationModal';
 
 interface AdminDashboardProps {
   onNavigate: (view: string, data?: any) => void;
@@ -18,6 +19,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
   const [experienceFilter, setExperienceFilter] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [jobToDelete, setJobToDelete] = useState<Job | null>(null);
 
   const loadJobs = () => {
     const params: any = {
@@ -47,23 +50,29 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
     setCurrentPage(1);
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this job posting? This action cannot be undone.')) {
-      setDeletingId(id);
-      try {
-        await dispatch(deleteJob(id)).unwrap();
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setDeletingId(null);
-      }
+  const openDeleteModal = (job: Job) => {
+    setJobToDelete(job);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!jobToDelete) return;
+    setDeletingId(jobToDelete.id);
+    try {
+      await dispatch(deleteJob(jobToDelete.id)).unwrap();
+      setIsDeleteModalOpen(false);
+      setJobToDelete(null);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDeletingId(null);
     }
   };
 
   const formatSalary = (salary: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       maximumFractionDigits: 0,
     }).format(salary);
   };
@@ -222,7 +231,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
                         </button>
                         <button
                           disabled={actionLoading || deletingId !== null}
-                          onClick={() => handleDelete(job.id)}
+                          onClick={() => openDeleteModal(job)}
                           className="p-1.5 rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-red-600 hover:border-red-500/30 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed shadow-sm flex items-center justify-center"
                           title="Delete Vacancy"
                         >
@@ -269,6 +278,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
           </div>
         )}
       </div>
+
+      {/* Reusable Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        jobTitle={jobToDelete?.title || ''}
+        isLoading={actionLoading || deletingId !== null}
+      />
     </div>
   );
 };

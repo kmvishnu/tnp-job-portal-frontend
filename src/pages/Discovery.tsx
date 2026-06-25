@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchJobs } from '../store/jobSlice';
-import { Filter, ChevronLeft, ChevronRight, Briefcase, Tag, Award } from 'lucide-react';
+import { Filter, ChevronLeft, ChevronRight, Briefcase, Tag, Award, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface DiscoveryProps {
   onNavigate: (view: string, data?: any) => void;
@@ -17,6 +17,7 @@ export const Discovery: React.FC<DiscoveryProps> = ({ onNavigate }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedExperience, setSelectedExperience] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isFilterExpanded, setIsFilterExpanded] = useState(false);
 
   const loadDiscoveryJobs = () => {
     const params: any = {
@@ -53,9 +54,9 @@ export const Discovery: React.FC<DiscoveryProps> = ({ onNavigate }) => {
   };
 
   const formatSalary = (salary: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       maximumFractionDigits: 0,
     }).format(salary);
   };
@@ -89,10 +90,95 @@ export const Discovery: React.FC<DiscoveryProps> = ({ onNavigate }) => {
         </p>
       </div>
 
+      {/* Mobile Filters Trigger */}
+      <div className="lg:hidden w-full">
+        <button
+          onClick={() => setIsFilterExpanded(!isFilterExpanded)}
+          className="w-full flex items-center justify-between bg-white border border-slate-200/60 p-4.5 rounded-2xl shadow-sm font-bold text-slate-800 hover:text-indigo-600 transition-colors cursor-pointer text-sm focus:outline-none"
+        >
+          <div className="flex items-center space-x-2">
+            <Filter className="h-4.5 w-4.5 text-indigo-600 animate-pulse" />
+            <span>Filters 🔍</span>
+            {(selectedCategory || selectedExperience) && (
+              <span className="bg-indigo-50 border border-indigo-100 text-[10px] text-indigo-600 font-extrabold px-2 py-0.5 rounded-md ml-1">
+                Active
+              </span>
+            )}
+          </div>
+          {isFilterExpanded ? (
+            <ChevronUp className="h-4.5 w-4.5 text-slate-400" />
+          ) : (
+            <ChevronDown className="h-4.5 w-4.5 text-slate-400" />
+          )}
+        </button>
+
+        {/* Collapsible mobile panel */}
+        {isFilterExpanded && (
+          <div className="mt-3 bg-white border border-slate-200/60 p-6 rounded-2xl shadow-sm space-y-6 animate-fadeIn">
+            {/* Header info */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <span className="font-bold text-slate-800 text-xs uppercase tracking-wider">Filter Parameters</span>
+              {(selectedCategory || selectedExperience) && (
+                <button
+                  onClick={handleResetFilters}
+                  className="text-[10px] font-bold text-indigo-600 hover:text-indigo-500 transition-colors uppercase tracking-wider"
+                >
+                  Clear All
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {/* Category checkboxes */}
+              <div className="space-y-3">
+                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Categories</h4>
+                <div className="grid grid-cols-2 sm:grid-cols-1 gap-2">
+                  {CATEGORIES.map((cat) => (
+                    <label 
+                      key={cat}
+                      className="flex items-center space-x-2.5 text-xs text-slate-650 font-semibold cursor-pointer group"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedCategory === cat}
+                        onChange={() => handleCategoryToggle(cat)}
+                        className="h-4 w-4 rounded border-slate-350 text-indigo-600 focus:ring-indigo-500/20 cursor-pointer"
+                      />
+                      <span className="group-hover:text-slate-900 transition-colors">{cat}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Experience level checkboxes */}
+              <div className="space-y-3 border-t sm:border-t-0 sm:border-l border-slate-100 pt-4 sm:pt-0 sm:pl-6">
+                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Experience Level</h4>
+                <div className="grid grid-cols-2 sm:grid-cols-1 gap-2">
+                  {EXPERIENCE_LEVELS.map((level) => (
+                    <label 
+                      key={level}
+                      className="flex items-center space-x-2.5 text-xs text-slate-650 font-semibold cursor-pointer group"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedExperience === level}
+                        onChange={() => handleExperienceToggle(level)}
+                        className="h-4 w-4 rounded border-slate-350 text-indigo-600 focus:ring-indigo-500/20 cursor-pointer"
+                      />
+                      <span className="group-hover:text-slate-900 transition-colors">{level}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Split Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-        {/* Left Sidebar: Filter Panel */}
-        <aside className="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm space-y-6">
+        {/* Left Sidebar: Filter Panel (Desktop Only) */}
+        <aside className="hidden lg:block bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm space-y-6">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <div className="flex items-center space-x-2 font-bold text-slate-800 text-sm">
               <Filter className="h-4 w-4 text-indigo-600" />

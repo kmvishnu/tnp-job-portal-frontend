@@ -47,9 +47,9 @@ export const JobDetails: React.FC<JobDetailsProps> = ({ jobId, onBack, onNavigat
   };
 
   const formatSalary = (salary: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       maximumFractionDigits: 0,
     }).format(salary);
   };

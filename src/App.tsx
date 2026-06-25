@@ -10,6 +10,7 @@ import { Login } from './pages/Login';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { JobAction } from './pages/JobAction';
 import { Loader2, ShieldAlert, LogOut } from 'lucide-react';
+import { SignoutConfirmationModal } from './components/SignoutConfirmationModal';
 
 interface RedirectState {
   view: string;
@@ -18,12 +19,13 @@ interface RedirectState {
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { isAuthenticated, user, loading } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, user, isBootstrapping } = useAppSelector((state) => state.auth);
 
   const [currentView, setCurrentView] = useState('landing'); // landing | jobs | job-details | login | dashboard | create | edit
   const [editingJob, setEditingJob] = useState<any>(null);
   const [editingJobId, setEditingJobId] = useState<string | null>(null);
   const [redirectAfterLogin, setRedirectAfterLogin] = useState<RedirectState | null>(null);
+  const [isSignoutOpen, setIsSignoutOpen] = useState(false);
 
   // 1. Initial Authentication Check on Mount
   useEffect(() => {
@@ -71,14 +73,15 @@ const App: React.FC = () => {
 
   const handleLogout = () => {
     dispatch(logout());
+    setIsSignoutOpen(false);
     setCurrentView('landing');
   };
 
   // Bootstrapping Loader
-  if (loading && !isAuthenticated) {
+  if (isBootstrapping) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center space-y-4 select-none">
-        <Loader2 className="h-7 w-7 text-indigo-650 animate-spin" />
+        <Loader2 className="h-7 w-7 text-indigo-600 animate-spin" />
         <div className="text-center">
           <h3 className="text-sm font-bold text-slate-800 tracking-wide">Connecting Console</h3>
           <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-1">Verifying encrypted credential matrices...</p>
@@ -101,14 +104,14 @@ const App: React.FC = () => {
       return (
         <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-center select-none font-sans">
           <div className="max-w-md bg-white border border-slate-200/60 rounded-3xl p-8 shadow-sm space-y-6">
-            <div className="inline-flex bg-red-50 border border-red-200/50 p-4 rounded-full text-red-655">
+            <div className="inline-flex bg-red-50 border border-red-200/50 p-4 rounded-full text-red-500">
               <ShieldAlert className="h-9 w-9 animate-bounce" />
             </div>
             <div className="space-y-2">
               <h3 className="text-xl font-extrabold text-slate-900 leading-none">Access Forbidden</h3>
               <p className="text-xs text-slate-500 font-medium leading-relaxed">
                 Your account authority level is <span className="font-bold text-indigo-600">USER</span>. 
-                The requested panel requires elevated <span className="font-bold text-red-650">ADMIN</span> permissions.
+                The requested panel requires elevated <span className="font-bold text-red-500">ADMIN</span> permissions.
               </p>
             </div>
             <div className="flex flex-col space-y-3 pt-2">
@@ -126,7 +129,7 @@ const App: React.FC = () => {
     }
 
     return (
-      <Layout onNavigate={handleNavigate} currentView={currentView}>
+      <Layout onNavigate={handleNavigate} currentView={currentView} onLogoutClick={() => setIsSignoutOpen(true)}>
         {currentView === 'dashboard' && (
           <AdminDashboard onNavigate={handleNavigate} />
         )}
@@ -143,7 +146,7 @@ const App: React.FC = () => {
   // Public Views Routing (Landing, Discovery, Details, Login)
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans transition-all duration-200">
-      <Header currentView={currentView} onNavigate={handleNavigate} />
+      <Header currentView={currentView} onNavigate={handleNavigate} onLogoutClick={() => setIsSignoutOpen(true)} />
       
       <main className="flex-grow max-w-6xl w-full mx-auto p-6 md:p-8 animate-fadeIn">
         {currentView === 'landing' && (
@@ -165,10 +168,26 @@ const App: React.FC = () => {
       </main>
 
       <footer className="bg-white border-t border-slate-200/60 py-6 text-center text-xs text-slate-400">
-        <p>&copy; {new Date().getFullYear()} TNP India Job Portal. All Rights Reserved. Powered by Icy Cyber Light Tech.</p>
+        <p>
+          &copy; {new Date().getFullYear()} TNP India Job Portal. All Rights Reserved. | Built with ❤️ by{' '}
+          <a
+            href="https://kmvishnu.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-indigo-600 hover:underline font-semibold"
+          >
+            Vishnu KM
+          </a>
+        </p>
       </footer>
+
+      <SignoutConfirmationModal
+        isOpen={isSignoutOpen}
+        onClose={() => setIsSignoutOpen(false)}
+        onConfirm={handleLogout}
+      />
     </div>
   );
 };
 
-export default App;
+export default App;App;

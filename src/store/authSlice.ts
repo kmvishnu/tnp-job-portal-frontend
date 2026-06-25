@@ -13,6 +13,7 @@ interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
+  isBootstrapping: boolean;
 }
 
 const initialState: AuthState = {
@@ -20,6 +21,7 @@ const initialState: AuthState = {
   isAuthenticated: false,
   loading: false,
   error: null,
+  isBootstrapping: true,
 };
 
 // Async Thunks
@@ -89,18 +91,21 @@ const authSlice = createSlice({
       .addCase(checkAuthStatus.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.isBootstrapping = true;
       })
       .addCase(checkAuthStatus.fulfilled, (state, action: PayloadAction<User>) => {
         state.loading = false;
         state.user = action.payload;
         state.isAuthenticated = true;
+        state.isBootstrapping = false;
       })
       .addCase(checkAuthStatus.rejected, (state) => {
         state.loading = false;
         state.user = null;
         state.isAuthenticated = false;
         // Do not display error to user on boot if they simply are not logged in
-        state.error = null; 
+        state.error = null;
+        state.isBootstrapping = false;
       });
 
     // Login

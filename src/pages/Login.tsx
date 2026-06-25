@@ -74,7 +74,7 @@ export const Login: React.FC<LoginProps> = ({ redirectInfo }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 relative overflow-hidden select-none">
+    <div className="flex items-center justify-center px-4 py-6 sm:py-10 relative overflow-hidden select-none">
       {/* Soft background icy glows */}
       <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-indigo-200/10 rounded-full blur-[112px]" />
       <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-cyan-200/10 rounded-full blur-[112px]" />
@@ -129,14 +129,6 @@ export const Login: React.FC<LoginProps> = ({ redirectInfo }) => {
             </button>
           </div>
 
-          {/* Form Errors */}
-          {error && (
-            <div className="mb-5 flex items-start space-x-2.5 bg-red-50 border border-red-200/50 p-4 rounded-xl text-red-650 text-xs font-semibold">
-              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-              <span>{error}</span>
-            </div>
-          )}
-
           {/* Form fields */}
           <form onSubmit={handleSubmit} className="space-y-4.5">
             {!isLogin && (
@@ -156,7 +148,7 @@ export const Login: React.FC<LoginProps> = ({ redirectInfo }) => {
                     value={formData.name}
                     onChange={handleChange}
                     className={`block w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-800 placeholder-slate-400 text-xs transition-all duration-200 ${
-                      validationErrors.name ? 'border-red-400' : 'border-slate-200'
+                      validationErrors.name ? 'border-red-500' : 'border-slate-200'
                     }`}
                     placeholder="Candidate Name"
                   />
@@ -164,6 +156,14 @@ export const Login: React.FC<LoginProps> = ({ redirectInfo }) => {
                 {validationErrors.name && (
                   <p className="text-[10px] text-red-500 font-semibold pl-1">{validationErrors.name}</p>
                 )}
+              </div>
+            )}
+
+            {/* Clean Crimson Login Error Warning Banner */}
+            {error && (
+              <div className="mb-4 bg-red-50 text-red-700 text-sm p-3 rounded-lg border border-red-200 flex items-start space-x-2 animate-fadeIn font-semibold">
+                <AlertCircle className="h-4.5 w-4.5 shrink-0 mt-0.5" />
+                <span>{error}</span>
               </div>
             )}
 
@@ -183,7 +183,7 @@ export const Login: React.FC<LoginProps> = ({ redirectInfo }) => {
                   value={formData.email}
                   onChange={handleChange}
                   className={`block w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-800 placeholder-slate-400 text-xs transition-all duration-200 ${
-                    validationErrors.email ? 'border-red-400' : 'border-slate-200'
+                    validationErrors.email ? 'border-red-500' : 'border-slate-200'
                   }`}
                   placeholder="candidate@tnp.com"
                 />
@@ -209,7 +209,7 @@ export const Login: React.FC<LoginProps> = ({ redirectInfo }) => {
                   value={formData.password}
                   onChange={handleChange}
                   className={`block w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-800 placeholder-slate-400 text-xs transition-all duration-200 ${
-                    validationErrors.password ? 'border-red-400' : 'border-slate-200'
+                    validationErrors.password ? 'border-red-500' : 'border-slate-200'
                   }`}
                   placeholder="••••••••"
                 />
@@ -219,23 +219,7 @@ export const Login: React.FC<LoginProps> = ({ redirectInfo }) => {
               )}
             </div>
 
-            {!isLogin && (
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400" htmlFor="role">
-                  Account Authority
-                </label>
-                <select
-                  id="role"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  className="block w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-700 text-xs transition-all duration-200"
-                >
-                  <option value="USER">USER (Apply for jobs)</option>
-                  <option value="ADMIN">ADMIN (Post and edit jobs)</option>
-                </select>
-              </div>
-            )}
+
 
             <button
               type="submit"

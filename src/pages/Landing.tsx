@@ -102,7 +102,7 @@ export const Landing: React.FC<LandingProps> = ({ onNavigate }) => {
                       {job.title}
                     </h4>
                     <span className="font-mono text-xs text-slate-500 font-bold bg-slate-100 px-2.5 py-0.5 rounded-md">
-                      ${job.salary.toLocaleString()}
+                      ₹{job.salary.toLocaleString('en-IN')}
                     </span>
                   </div>
                   <p className="text-slate-500 text-xs line-clamp-2">

@@ -167,7 +167,7 @@ export const JobAction: React.FC<JobActionProps> = ({ jobToEdit, onBack }) => {
                 onChange={handleChange}
                 placeholder="Senior Full Stack Software Architect"
                 className={`block w-full px-4 py-2.5 bg-slate-50 border rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-800 placeholder-slate-400 text-xs transition-all duration-200 ${
-                  validationErrors.title ? 'border-red-400' : 'border-slate-200'
+                  validationErrors.title ? 'border-red-500' : 'border-slate-200'
                 }`}
               />
               {validationErrors.title && (
@@ -218,11 +218,11 @@ export const JobAction: React.FC<JobActionProps> = ({ jobToEdit, onBack }) => {
             {/* Salary */}
             <div className="space-y-1.5 md:col-span-2">
               <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400" htmlFor="salary">
-                Annual Salary (USD)
+                Annual Salary (INR)
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 text-xs font-bold">
-                  $
+                  ₹
                 </span>
                 <input
                   id="salary"
@@ -231,9 +231,9 @@ export const JobAction: React.FC<JobActionProps> = ({ jobToEdit, onBack }) => {
                   min="0"
                   value={formData.salary}
                   onChange={handleChange}
-                  placeholder="145000"
+                  placeholder="1600000"
                   className={`block w-full pl-9 pr-4 py-2.5 bg-slate-50 border rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-800 placeholder-slate-400 text-xs transition-all duration-200 ${
-                    validationErrors.salary ? 'border-red-400' : 'border-slate-200'
+                    validationErrors.salary ? 'border-red-500' : 'border-slate-200'
                   }`}
                 />
               </div>
@@ -255,7 +255,7 @@ export const JobAction: React.FC<JobActionProps> = ({ jobToEdit, onBack }) => {
                 onChange={handleChange}
                 placeholder="Detail technical requirements, infrastructure dependencies, and prerequisites..."
                 className={`block w-full px-4 py-2.5 bg-slate-50 border rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-800 placeholder-slate-400 text-xs transition-all duration-200 resize-none ${
-                  validationErrors.description ? 'border-red-400' : 'border-slate-200'
+                  validationErrors.description ? 'border-red-500' : 'border-slate-200'
                 }`}
               />
               {validationErrors.description && (
