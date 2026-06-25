@@ -132,7 +132,7 @@ export const Landing: React.FC<LandingProps> = ({ onNavigate }) => {
               <div className="bg-indigo-600 p-1.5 rounded-lg text-white">
                 <Briefcase className="h-4 w-4" />
               </div>
-              <span className="font-extrabold text-slate-900 text-sm">TNP Job Portal</span>
+              <span className="font-extrabold text-slate-900 text-sm">Nexus Careers</span>
             </div>
             <p className="text-slate-400 text-xs max-w-xs leading-relaxed">
               Designed as a modern tech-forward portal with JWT authentication, role restrictions, and cookie protection.

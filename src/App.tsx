@@ -169,7 +169,7 @@ const App: React.FC = () => {
 
       <footer className="bg-white border-t border-slate-200/60 py-6 text-center text-xs text-slate-400">
         <p>
-          &copy; {new Date().getFullYear()} TNP India Job Portal. All Rights Reserved. | Built with ❤️ by{' '}
+          &copy; {new Date().getFullYear()} Nexus Careers. All Rights Reserved. | Built with ❤️ by{' '}
           <a
             href="https://kmvishnu.in"
             target="_blank"

@@ -28,7 +28,7 @@ export const Header: React.FC<HeaderProps> = ({ currentView, onNavigate, onLogou
           </div>
           <div>
             <h1 className="text-lg font-bold tracking-tight text-slate-900 leading-tight">
-              TNP Job Portal
+              Nexus Careers
             </h1>
             <p className="text-[10px] text-cyan-600 font-bold uppercase tracking-wider leading-none mt-0.5">
               Career Architecture

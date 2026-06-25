@@ -185,7 +185,7 @@ export const Login: React.FC<LoginProps> = ({ redirectInfo }) => {
                   className={`block w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/40 focus:border-indigo-500 text-slate-800 placeholder-slate-400 text-xs transition-all duration-200 ${
                     validationErrors.email ? 'border-red-500' : 'border-slate-200'
                   }`}
-                  placeholder="candidate@tnp.com"
+                  placeholder="candidate@nexus.com"
                 />
               </div>
               {validationErrors.email && (

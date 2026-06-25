@@ -30,7 +30,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentVie
             </div>
             <div>
               <h1 className="text-lg font-bold tracking-tight text-slate-900 leading-tight">
-                TNP Job Portal
+                Nexus Careers
               </h1>
               <p className="text-[10px] text-cyan-600 font-bold uppercase tracking-wider leading-none mt-0.5">
                 Admin Control Room
@@ -180,7 +180,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentVie
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200/60 py-6 text-center text-xs text-slate-400">
         <p>
-          &copy; {new Date().getFullYear()} TNP India Job Portal. All Rights Reserved. | Built with ❤️ by{' '}
+          &copy; {new Date().getFullYear()} Nexus Careers. All Rights Reserved. | Built with ❤️ by{' '}
           <a
             href="https://kmvishnu.in"
             target="_blank"
